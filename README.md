@@ -1,3 +1,7 @@
+### Diff from upstream repository
+
+Added new input mode: higher level function keys (f13, f16, f17, f18, f19, f20), selectable and indicated in icon and send when pressed.
+
 # Mac Dial
 
 macOS support for the Surface Dial. The surface dial can be paired with macOS but any input results in invalid mouse inputs on macOS. This app reads the raw data from the dial and translates them to correct mouse and media inputs for macOS.

@@ -15,6 +15,7 @@ enum ScrollDirection: String {
 
 enum Mode: String {
     case scrolling = "scrolling"
+    case fkeying = "fkeying"
     case playback = "playback"
 }
 
@@ -72,6 +73,7 @@ extension NSMenu {
         self.addItem(items.connectionStatus)
         self.addItem(items.separator)
         self.addItem(items.scrollMode)
+        self.addItem(items.fkeyMode)
         self.addItem(items.playbackMode)
         self.addItem(items.separator2)
         items.wheelSensitivity.submenu = NSMenu.init()
@@ -102,6 +104,7 @@ class StatusBarController
         let connectionStatus = NSMenuItem.init()
         let separator = NSMenuItem.separator()
         let scrollMode = ControllerOptionItem.init(title: "Scroll mode", mode: .scrolling, controller: ScrollController())
+        let fkeyMode = ControllerOptionItem.init(title: "FKey mode", mode: .fkeying, controller: FKeyController())
         let playbackMode = ControllerOptionItem.init(title: "Playback mode", mode: .playback, controller: PlaybackController())
         let separator2 = NSMenuItem.separator()
         let wheelSensitivity = NSMenuItem.init(title: "Wheel sensitivity")
@@ -126,6 +129,8 @@ class StatusBarController
             {
             case .some("scroll"):
                 return .scrolling
+            case .some("fkeying"):
+                return .fkeying
             case .some("playback"):
                 return .playback
             default:
@@ -138,6 +143,8 @@ class StatusBarController
             {
             case .playback:
                 UserDefaults.standard.setValue("playback", forKey: "mode")
+            case .fkeying:
+                UserDefaults.standard.setValue("fkeying", forKey: "mode")
             case .scrolling:
                 UserDefaults.standard.setValue("scroll", forKey: "mode")
             }
@@ -151,6 +158,8 @@ class StatusBarController
             {
             case .playback:
                 return menuItems.playbackMode.controller
+            case .fkeying:
+                return menuItems.fkeyMode.controller
             case .scrolling:
                 return menuItems.scrollMode.controller
             }
@@ -231,6 +240,10 @@ class StatusBarController
         menuItems.scrollMode.action = #selector(setMode(sender:))
         menuItems.scrollMode.selected = currentMode == .scrolling;
         
+        menuItems.fkeyMode.target = self
+        menuItems.fkeyMode.action = #selector(setMode(sender:))
+        menuItems.fkeyMode.selected = currentMode == .fkeying;
+        
         menuItems.playbackMode.target = self
         menuItems.playbackMode.action = #selector(setMode(sender:))
         menuItems.playbackMode.selected = currentMode == .playback;
@@ -295,6 +308,55 @@ class StatusBarController
             if (menuItems.scrollMode.state == .on) {
                 button.image = #imageLiteral(resourceName: "icon-scroll")
             }
+            if (menuItems.fkeyMode.state == .on) {
+                button.image = #imageLiteral(resourceName: "f13")
+            }
+            else if (menuItems.playbackMode.state == .on) {
+                button.image = #imageLiteral(resourceName: "icon-playback")
+            }
+            
+            button.image?.size = NSSize(width: 18, height: 18)
+            
+            button.imagePosition = .imageLeft
+        }
+    }
+    
+    public func updateIcon(indexer: Int) {
+        if let button = statusItem.button {
+            if (menuItems.scrollMode.state == .on) {
+                button.image = #imageLiteral(resourceName: "icon-scroll")
+            }
+            if (menuItems.fkeyMode.state == .on) {
+                switch (indexer) {
+                case 0:
+                    button.image = #imageLiteral(resourceName: "f13")
+                    break;
+                //case 1:
+                    //button.image = #imageLiteral(resourceName: "f14")
+                    //break;
+                //case 2:
+                    //button.image = #imageLiteral(resourceName: "f15")
+                    //break;
+                case 1:
+                    button.image = #imageLiteral(resourceName: "f16")
+                    break;
+                case 2:
+                    button.image = #imageLiteral(resourceName: "f17")
+                    break;
+                case 3:
+                    button.image = #imageLiteral(resourceName: "f18")
+                    break;
+                case 4:
+                    button.image = #imageLiteral(resourceName: "f19")
+                    break;
+                case 5:
+                    button.image = #imageLiteral(resourceName: "f20")
+                    break;
+                default:
+                    button.image = #imageLiteral(resourceName: "icon-scroll")
+                    break;
+                }
+            }
             else if (menuItems.playbackMode.state == .on) {
                 button.image = #imageLiteral(resourceName: "icon-playback")
             }
@@ -314,6 +376,7 @@ class StatusBarController
         let item = sender as! ControllerOptionItem
         
         menuItems.playbackMode.state = item == menuItems.playbackMode ? .on : .off
+        menuItems.fkeyMode.state = item == menuItems.fkeyMode ? .on : .off
         menuItems.scrollMode.state = item == menuItems.scrollMode ? .on : .off
         
         currentMode = item.option

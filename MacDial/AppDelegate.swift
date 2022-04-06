@@ -2,10 +2,12 @@
 import Cocoa
 import SwiftUI
 
+var statusBarController: StatusBarController?
+
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    var statusBarController: StatusBarController?
+    //statusBarController: StatusBarController?
     let dial = Dial()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
